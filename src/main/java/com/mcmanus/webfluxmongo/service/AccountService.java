@@ -34,16 +34,17 @@ public class AccountService {
     }
 
     public Flux<Account> initialize() {
-        List<Account> accounts = new ArrayList<>();
-        String[] owners = new String[] {"Toto", "Manu", "Marcel", "Gepeto", "Gaston"};
-        for (int i=0; i<10000; i++) {
-            Account a = new Account();
-            a.setOwner(owners[(int) (Math.random() * owners.length)]);
-            a.setValue(Math.random() * 5000);
-            accounts.add(a);
-        }
 
-        return repository.saveAll(accounts);
+        String[] owners = new String[] {"Toto", "Manu", "Marcel", "Gepeto", "Gaston"};
+
+        return  Flux.range(0, 10000)
+                .map(integer -> {
+                    Account a = new Account();
+                    a.setOwner(owners[(int) (Math.random() * owners.length)]);
+                    a.setValue(Math.random() * 5000);
+                    return a;
+                })
+                .doOnNext(account -> repository.save(account));
     }
 
 }
